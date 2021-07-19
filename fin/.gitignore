@@ -1,5 +1,5 @@
 /target/
-/workspace/
+*/workspace/*
 .classpath
 
 # Created by https://www.toptal.com/developers/gitignore/api/java,eclipse,windows
