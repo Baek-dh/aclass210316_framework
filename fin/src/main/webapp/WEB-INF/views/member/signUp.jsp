@@ -40,7 +40,7 @@
 							<label for="id">* 아이디</label>
 						</div>
 						<div class="col-md-6">
-							<input type="text" class="form-control" name="id" id="id" maxlength="12" placeholder="아이디를 입력하세요" autocomplete="off" required>
+							<input type="text" class="form-control" name="memberId" id="id" maxlength="12" placeholder="아이디를 입력하세요" autocomplete="off" required>
 							<!-- required : 필수 입력 항목으로 지정 -->
 							<!-- autocomplete="off" : input 태그 자동완성 기능을 끔 -->
 
@@ -65,7 +65,7 @@
 							<label for="pwd1">* 비밀번호</label>
 						</div>
 						<div class="col-md-6">
-							<input type="password" class="form-control" id="pwd1" name="pwd1" maxlength="20" placeholder="비밀번호를 입력하세요" required>
+							<input type="password" class="form-control" id="pwd1" name="memberPw" maxlength="20" placeholder="비밀번호를 입력하세요" required>
 						</div>
 
 						<div class="col-md-6 offset-md-3">
@@ -94,7 +94,7 @@
 							<label for="name">* 이름</label>
 						</div>
 						<div class="col-md-6">
-							<input type="text" class="form-control" id="name" name="name" required>
+							<input type="text" class="form-control" id="name" name="memberName" required>
 						</div>
 
 						<div class="col-md-6 offset-md-3">
@@ -140,7 +140,7 @@
 							<label for="email">* Email</label>
 						</div>
 						<div class="col-md-6">
-							<input type="email" class="form-control" id="email" name="email" autocomplete="off" required>
+							<input type="email" class="form-control" id="email" name="memberEmail" autocomplete="off" required>
 						</div>
 
 						<div class="col-md-6 offset-md-3">

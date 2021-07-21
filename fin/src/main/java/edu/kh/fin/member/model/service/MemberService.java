@@ -19,6 +19,27 @@ public interface MemberService {
 	
 	// 인터페이스에서 메소드는 모두 묵시적으로 public abstract 이다.
 	public abstract Member login(Member inputMember);
+
+	
+	/** 아이디 중복 검사 Service
+	 * @param id
+	 * @return result
+	 */
+	public abstract int idDupCheck(String id);
+
+
+	/** 회원 가입 Service
+	 * @param inputMember
+	 * @return result
+	 */
+	public abstract int signUp(Member inputMember);
+
+
+	/** 회원 정보 수정 Service
+	 * @param inputMember
+	 * @return result
+	 */
+	public abstract int updateMember(Member inputMember);
 	
 	
 	

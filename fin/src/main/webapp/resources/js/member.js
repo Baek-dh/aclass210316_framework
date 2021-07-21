@@ -243,7 +243,29 @@ function validate(){
             return false;  // submit 이벤트 제거(회원가입 실행 X)
 
         }
-    }
+    } // for end
+    
+    
+    // 나눠져 있는 phone, address를 하나로 합쳐
+    // form태그 내부 제일 마지막에 type="hidden"으로 추가하기
+    
+    const phone = $("[name='phone']"); // name 속성 값이 phone인 요소를 모두 얻어와 배열로 저장
+    const address = $("[name='address']"); // name 속성 값이 address인 요소를 모두 얻어와 배열로 저장
+    
+    // 요소에 저장된 value만 얻어와 합치기
+    const memberPhone = $(phone[0]).val() + "-" + $(phone[1]).val() + "-" + $(phone[2]).val();
+    const memberAddress = $(address[0]).val() + "," + $(address[1]).val() + "," + $(address[2]).val();
+    
+    
+    // form 태그에 type="hidden"으로 추가
+    const inputPhone = $("<input>", { type : "hidden", name : "memberPhone", value : memberPhone }  );
+    const inputAddress = $("<input>", { type : "hidden", name : "memberAddress", value : memberAddress }  );
+    
+    // append() : 선택된 요소의 마지막 자식으로 추가
+    $("form[name='signUpForm']").append(inputPhone).append(inputAddress);
+    
+    //return false;
+    
 }
 
 

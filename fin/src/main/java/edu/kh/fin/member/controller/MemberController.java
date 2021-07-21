@@ -8,10 +8,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -34,16 +36,6 @@ public class MemberController {
 	// 타입이 같거나, 상속 관계에 있는 객체를 자동으로 DI(의존성 주입) 해줌
 	@Autowired
 	private MemberService service; 
-	
-	
-	
-	// 회원 가입 화면 전환용 Controller
-	@RequestMapping("signUp")  // 클래스 위에 작성된 RequestMapping 값 합쳐져 요청을 구분함
-	public String signUp() { // "/member/signUp"
-		return "member/signUp"; // 요청 위임할 jsp의 이름(ViewResolver 부분을 제외한 나머진 경로)
-		
-		//   /WEB-INF/views/member/signUp.jsp
-	}
 	
 	
 	// -----------------------------------------
@@ -169,6 +161,147 @@ public class MemberController {
 	
 	
 	
+	// 회원 가입 화면 전환용 Controller
+	@RequestMapping(value="signUp", method=RequestMethod.GET)  // 클래스 위에 작성된 RequestMapping 값 합쳐져 요청을 구분함
+	public String signUp() { // "/member/signUp"
+		return "member/signUp"; // 요청 위임할 jsp의 이름(ViewResolver 부분을 제외한 나머진 경로)
+		
+		//   /WEB-INF/views/member/signUp.jsp
+	}
+	
+	
+	// 회원 가입 Controller
+	@RequestMapping(value="signUp", method=RequestMethod.POST )
+	public String signUp( @ModelAttribute Member inputMember , RedirectAttributes ra   ) {
+
+		System.out.println(inputMember);
+		
+		// inputMember에는 회원 가입 시 입력한 모든 값이 담겨져 있다. ( == 커맨드 객체)
+		
+		// DB에 회원 정보를 삽입하는 Service 호출
+		int result = service.signUp(inputMember);
+		
+		// 회원 가입 성공 또는 실패 경우에 따라 출력되는 메세지 제어(SweetAlert)
+		if( result > 0 ) {
+			swalSetMessage(ra, "success", "회원 가입 성공",  inputMember.getMemberName() + "님 환영합니다.");
+		}else {
+			swalSetMessage(ra, "error", "회원 가입 실패",  "고객센터로 문의해주세요.");
+		}
+		
+		return "redirect:/"; // 메인페이지 재요청
+	}
+	
+	
+	
+	
+	
+	// 아이디 중복 검사 Controller(ajax)
+	@ResponseBody
+	@RequestMapping(value="idDupCheck", method=RequestMethod.POST)
+	public int idDupCheck(@RequestParam("id") String id) {
+		
+		// 아이디 중복 검사 Service 호출
+		int result = service.idDupCheck(id);
+		
+		// ajax : 자바스크립트를 이용한 비동기 통신
+		// 비동기 통신 : 요청-응답 시 화면 전체 갱신이 아닌 일부만 갱신
+		//				-> 화면이 일부만 변한다!
+		
+		
+		// (문제점!!)
+		// Spring Controller에서 메소드 return은 forward, redirect만 가능하다.
+		
+		// 만약 return result; 할 경우
+		// View Resolver로 이동하여  /WEB-INF/views/1.jsp로 요청 위임됨
+		
+		// 만약 return "redirect:" + result; 를 할 경우
+		// /fin/member/1 로 재요청을 진행함
+		
+		// (해결방법!)
+		// 해당 메소드에 @ResponseBody 어노테이션을 작성하면 해결 가능!
+		
+		// @ResponseBody : 반환값이 forward, redirect가 아닌 값 자체로 반환한다는 것을 
+		//				   명시하는 어노테이션.
+		
+		return result;
+		
+	}
+	
+	
+	// 내 정보 조회 화면 전환용 Controller
+	//  /member/myPage  주소로 요청이 오면 
+	//  /WEB-INF/views/member/myPage.jsp 로 요청 위임(forward)
+	@RequestMapping(value="myPage", method=RequestMethod.GET)
+	public String myPage() {
+		return "member/myPage";
+	}
+	
+	
+	// 회원 정보 수정 Controller
+	@RequestMapping(value="update", method=RequestMethod.POST)
+	public String updateMember( @ModelAttribute("loginMember") Member loginMember,
+							String inputEmail, String inputPhone, String inputAddress,
+							Member inputMember // 비어있는 커맨드 객체 == new Member()
+							, RedirectAttributes ra) {
+		// 넘겨져올 파라미터 : inputEmail, 합쳐진 phone, 합쳐진 address
+		// 추가로 필요한 값 : 회원 번호 (Session에 있는 loginMember에서 얻어옴)
+		
+		// (리마인드) 로그인 -> loginMember Session에 올렸다. 어떻게?
+		//	-> Model에 추가하여 @SessionAttributes를 통해 올렸다
+		
+		// @SessionAttributes로 Session에 올라간 내용은
+		// @ModelAttribute("key")로 받아올 수 있다.
+		
+		// String inputEmail  : @RequestParam 생략 (name 속성값 == 변수명)
+		
+		// 마이바티스에 사용할 객체는 한 개만 전달할 수 있다!!
+		// -> 사용할 값이 여러 개면 하나의 객체에 담아서 전달
+		// --> inputMember에 담아서 전달하자!!
+		
+		inputMember.setMemberNo( loginMember.getMemberNo()  );
+		inputMember.setMemberEmail(inputEmail);
+		inputMember.setMemberPhone(inputPhone);
+		inputMember.setMemberAddress(inputAddress);
+		
+		// 회원 정보 수정 Service
+		int result = service.updateMember(inputMember);
+		
+		if( result > 0 ) { // 성공
+			swalSetMessage(ra, "success", "회원 정보 수정 성공", null);
+			
+			// DB와 Session 정보 동기화
+			loginMember.setMemberEmail(inputEmail);
+			loginMember.setMemberPhone(inputPhone);
+			loginMember.setMemberAddress(inputAddress);
+			
+		}else { // 실패
+			swalSetMessage(ra, "error", "회원 정보 수정 실패", null);
+		}
+		
+		
+		return "redirect:/member/myPage";
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	// SweetAlert를 이용한 메세지 전달용 메소드
+	public static void swalSetMessage(RedirectAttributes ra, String icon, String title, String text) {
+		// RedirectAttributes : 리다이렉트 시 값을 전달하는 용도의 객체
+		
+		ra.addFlashAttribute("icon", icon);
+		ra.addFlashAttribute("title", title);
+		ra.addFlashAttribute("text", text);
+		
+	}
 	
 	
 	

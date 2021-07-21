@@ -26,6 +26,33 @@ public class MemberDAO {
 		// memberId : SQL을 수행할 때 사용할 값
 	}
 
+
+	/** 아이디 중복 검사 DAO
+	 * @param id
+	 * @return result
+	 */
+	public int idDupCheck(String id) {
+		return sqlSession.selectOne("memberMapper.idDupCheck", id);
+	}
+
+
+	/** 회원 가입 DAO
+	 * @param inputMember
+	 * @return result
+	 */
+	public int signUp(Member inputMember) {
+		return sqlSession.insert("memberMapper.signUp", inputMember  );
+	}
+
+
+	/** 회원 정보 수정 DAO
+	 * @param inputMember
+	 * @return result
+	 */
+	public int updateMember(Member inputMember) {
+		return sqlSession.update("memberMapper.updateMember", inputMember);
+	}
+
 	
 	
 	

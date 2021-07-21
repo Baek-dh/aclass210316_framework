@@ -43,7 +43,7 @@
 				<h3>My Page</h3>
 				<hr>
 				<div class="bg-white rounded shadow-sm container p-3">
-					<form method="POST" action="update" onsubmit="return memberUpdateValidate();" class="form-horizontal" role="form">
+					<form method="POST" action="update"  name="updateForm"  onsubmit="return memberUpdateValidate();" class="form-horizontal" role="form">
 						<!-- 아이디 -->
 						<div class="row mb-3 form-row">
 							<div class="col-md-3">
@@ -98,7 +98,7 @@
 								<label for="memberEmail">Email</label>
 							</div>
 							<div class="col-md-6">
-								<input type="email" class="form-control" id="email" name="email" value="${loginMember.memberEmail }">
+								<input type="email" class="form-control" id="email" name="inputEmail" value="${loginMember.memberEmail }">
 							</div>
 						</div>
 						<br>
@@ -189,6 +189,7 @@
 		})();
 	
 	
+			
 		// 회원 정보 수정 시 유효성 검사
 		function memberUpdateValidate(){
 		    const regExp1 = /^[0-9]{3,4}$/; // 숫자 3~4글자
@@ -219,6 +220,26 @@
 		    	
 		    	return false;
 		    }
+		    
+		    
+		   
+			const phone = $("[name='phone']");
+			const address = $("[name='address']");
+	
+	
+			// 입력된 전화번호, 주소 조합하여 form태그에 hidden으로 추가 하기
+			// 왜? ->  파라미터를 쉽게 받게 하기 위하여
+			const memberPhone = $("<input>", {
+				type: "hidden", name: "inputPhone",
+				value: $(phone[0]).val() + "-" + $(phone[1]).val() + "-" + $(phone[2]).val()
+			});
+	
+			const memberAddress = $("<input>", {
+				type: "hidden", name: "inputAddress",
+				value: $(address[0]).val() + "," + $(address[1]).val() + "," + $(address[2]).val()
+			});
+	
+			$("form[name='updateForm']").append(memberPhone).append(memberAddress);
 		    
 		}
 			

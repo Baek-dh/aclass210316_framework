@@ -3,6 +3,7 @@ package edu.kh.fin.member.model.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import edu.kh.fin.member.model.dao.MemberDAO;
 import edu.kh.fin.member.model.vo.Member;
@@ -62,6 +63,50 @@ public class MemberServiceImpl implements MemberService {
 		}
 		
 		return loginMember;
+	}
+
+
+	// 아이디 중복 검사 Service
+	@Override
+	public int idDupCheck(String id) {
+		return dao.idDupCheck(id);
+	}
+
+
+	/* 스프링에서 트랜잭션 처리를 하는 방법
+	 * 1. 코드 기반 처리 방법 -> 기존 방법
+	 * 2. 선언적 트랜잭션 처리 방법
+	 * 	1) <tx:advice> XML 작성 방법
+	 *  2) @Transactional 어노테이션 작성 방법
+	 *  * 트랜잭션 처리를 위한 매니저가 bean으로 등록되어 있어야 함.
+	 * 
+	 * @Transactional이 commit/rollback을 하는 기준
+	 * -> 해당 메소드 내에서 RuntimeException이 발생하면 rollback, 발생하지 않으면 commit
+	 * -> 발생하는 예외의 기준을 바꾸는 방법 : rollbackFor 속성을 사용.
+	 * */
+	
+	// 회원 가입 Service
+	@Transactional (rollbackFor = Exception.class) // 어떤 예외든 발생하면 rollback
+	@Override
+	public int signUp(Member inputMember) {
+		
+		// ** 비밀번호를 bcrypt 암호화를 이용해서 변경하는 작업
+		String encPwd = bCryptPasswordEncoder.encode( inputMember.getMemberPw() );
+		
+		// 암호화된 비밀번호를 inputMember에 세팅
+		inputMember.setMemberPw(encPwd);
+		
+		// DB에 inputMember에 담긴 내용을 삽입 후 결과를 다시 Controller로 돌려보냄
+		return dao.signUp(inputMember);
+	}
+
+
+	
+	// 회원 정보 수정 Service
+	@Transactional(rollbackFor = Exception.class)
+	@Override
+	public int updateMember(Member inputMember) {
+		return dao.updateMember(inputMember);
 	}
 	
 	
