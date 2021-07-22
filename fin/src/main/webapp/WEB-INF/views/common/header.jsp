@@ -48,7 +48,9 @@ body {
 			</button>
 			<div class="collapse navbar-collapse" id="navbarResponsive">
 				<ul class="navbar-nav ml-auto">
-					<li class="nav-item"><a class="nav-link" href="#">Notice</a></li>
+				
+					<li class="nav-item"><a class="nav-link" href="${contextPath}/chat/roomList">채팅</a></li>
+					
 					<li class="nav-item"><a class="nav-link" href="${contextPath}/board/list?type=1">Free Board</a></li>
 					<li class="nav-item"><a class="nav-link" href="${contextPath}/board/list?type=2">Information Board</a></li>
 					<li class="nav-item"><a class="nav-link" href="${contextPath}/board/list?type=3">QnA Board</a></li>

@@ -283,9 +283,75 @@ public class MemberController {
 	}
 	
 	
+	// 비밀번호 변경 화면 전환 Controller
+	@RequestMapping(value="changePwd", method=RequestMethod.GET)
+	public String changePwd() {
+		return "member/changePwd";
+	}
 	
 	
+	// 비밀번호 변경 Controller
+	// 주소 매핑, 파라미터 전달받기, 세션에서 로그인 정보 얻어오기
+	@RequestMapping(value="changePwd", method=RequestMethod.POST)
+	public String changPwd(@RequestParam("currentPwd") String currentPwd,
+						   @RequestParam("newPwd1") String newPwd,
+						   @ModelAttribute("loginMember") Member loginMember,
+						   RedirectAttributes ra) {
+		
+		
+		int result = service.changePwd(currentPwd, newPwd, loginMember);
+		
+		String path = "redirect:";
+		
+		if(result > 0) { // 비밀번호 변경 성공
+			swalSetMessage(ra, "success", "비밀번호 변경 성공", null);
+			path += "myPage";
+			
+		}else { // 실패
+			swalSetMessage(ra, "error", "비밀번호 변경 실패", null);
+			path += "changePwd";
+			
+		}
+		
+		return path;
+	}
 	
+	
+	// 회원 탈퇴 화면 전환 Controller
+	@RequestMapping(value="secession", method=RequestMethod.GET)
+	public String secession() {
+		return "member/secession";
+	}
+	
+	
+	// 회원 탈퇴 Controller
+	@RequestMapping(value="secession", method=RequestMethod.POST)
+	public String secession(@RequestParam("currentPwd") String currentPwd, // 입력된 현재 비밀번호
+							@ModelAttribute("loginMember") Member loginMember, // 로그인된 회원 정보
+							RedirectAttributes ra,  // 메세지 전달용 객체
+							SessionStatus status) {  // 세션 상태 관리 객체(세션 만료용)
+		
+		int result = service.secession(currentPwd, loginMember.getMemberNo());
+		
+		String path = "redirect:";
+		
+		if(result > 0) {
+			path += "/"; // 메인페이지
+			swalSetMessage(ra, "success", "회원 탈퇴 성공", "이용해 주셔서 감사합니다.");
+			status.setComplete(); // 세션 만료
+			
+		}else {
+			path += "secession"; // 탈퇴 페이지
+			swalSetMessage(ra, "success", "회원 탈퇴 실패", null);
+			
+		}
+		
+		
+		return path;
+	}
+	
+
+
 	
 	
 	
@@ -302,6 +368,10 @@ public class MemberController {
 		ra.addFlashAttribute("text", text);
 		
 	}
+	
+	
+	
+	
 	
 	
 	

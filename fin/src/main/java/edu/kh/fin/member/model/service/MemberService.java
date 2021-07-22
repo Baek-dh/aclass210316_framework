@@ -40,6 +40,23 @@ public interface MemberService {
 	 * @return result
 	 */
 	public abstract int updateMember(Member inputMember);
+
+
+	/** 회원 비밀번호 변경 Service
+	 * @param currentPwd
+	 * @param newPwd 
+	 * @param loginMember
+	 * @return result
+	 */
+	public abstract int changePwd(String currentPwd, String newPwd, Member loginMember);
+
+
+	/** 회원 탈퇴 Service
+	 * @param currentPwd
+	 * @param memberNo
+	 * @return result
+	 */
+	public abstract int secession(String currentPwd, int memberNo);
 	
 	
 	

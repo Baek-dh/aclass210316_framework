@@ -6,6 +6,10 @@ import org.springframework.stereotype.Repository;
 
 import edu.kh.fin.member.model.vo.Member;
 
+/**
+ * @author user1
+ *
+ */
 @Repository // 퍼시스턴스(Persistence, 영속성) 레이어, 영속성을 가지는 속성(파일, DB)와 관련된 클래스 + bean 등록
 public class MemberDAO {
 	
@@ -51,6 +55,33 @@ public class MemberDAO {
 	 */
 	public int updateMember(Member inputMember) {
 		return sqlSession.update("memberMapper.updateMember", inputMember);
+	}
+
+
+	/** 회원 비밀번호 조회 DAO
+	 * @param memberNo
+	 * @return savePwd
+	 */
+	public String selectPassword(int memberNo) {
+		return sqlSession.selectOne("memberMapper.selectPassword", memberNo);
+	}
+
+
+	/** 회원 비밀번호 변경 DAO
+	 * @param loginMember
+	 * @return result
+	 */
+	public int changePwd(Member loginMember) {
+		return sqlSession.update("memberMapper.changePwd", loginMember);
+	}
+
+
+	/** 회원 탈퇴 DAO
+	 * @param memberNo
+	 * @return result
+	 */
+	public int secession(int memberNo) {
+		return sqlSession.update("memberMapper.secession", memberNo);
 	}
 
 	
