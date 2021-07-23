@@ -64,6 +64,15 @@ public class ChatServiceImpl implements ChatService{
 	}
 
 	
+	// 채팅 내용 삽입
+	@Transactional(rollbackFor = Exception.class)
+	@Override
+	public int insertMessage(ChatMessage cm) {
+		return dao.insertMessage(cm);
+	}
+
+	
+	
 	
 	
 	

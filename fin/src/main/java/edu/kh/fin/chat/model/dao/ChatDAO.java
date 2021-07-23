@@ -53,6 +53,14 @@ public class ChatDAO {
 	public List<ChatMessage> selectChatMessage(int chatRoomNo) {
 		return sqlSession.selectList("chatMapper.selectChatMessage", chatRoomNo);
 	}
+
+	/** 채팅 내용 삽입
+	 * @param cm
+	 * @return result
+	 */
+	public int insertMessage(ChatMessage cm) {
+		return sqlSession.insert("chatMapper.insertMessage", cm);
+	}
 	
 	
 	

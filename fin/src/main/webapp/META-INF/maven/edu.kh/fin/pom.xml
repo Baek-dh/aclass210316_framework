@@ -16,8 +16,6 @@
 		<org.slf4j-version>1.7.25</org.slf4j-version>
 	</properties>
 	
-	
-	
 	<dependencies>
 		<!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
 		<dependency>
@@ -79,6 +77,25 @@
 		    <artifactId>commons-dbcp2</artifactId>
 		    <version>2.7.0</version>
 		</dependency>
+		
+		<!-- Spring Websocket 모듈 -->
+		<!-- https://mvnrepository.com/artifact/org.springframework/spring-websocket -->
+		<dependency>
+		    <groupId>org.springframework</groupId>
+		    <artifactId>spring-websocket</artifactId>
+		    <version>${org.springframework-version}</version>
+		</dependency>
+		
+		
+		<!-- jackson : 자바에서 JSON을 사용하게 해주는 라이브러리 -->
+		<!-- jackson databind :  POJO 기반의 자바 객체를 JSON으로 변환하는하는 라이브러ㅣ-->
+		<!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind -->
+		<dependency>
+		    <groupId>com.fasterxml.jackson.core</groupId>
+		    <artifactId>jackson-databind</artifactId>
+		    <version>2.9.8</version>
+		</dependency>
+		
 		
 		
 	

@@ -65,6 +65,7 @@
   </select>
   
   
+  <!-- 채팅 내용 삽입 -->
   <insert id="insertMessage" parameterType="ChatMessage">
   	INSERT INTO CHAT_MESSAGE
   	VALUES(SEQ_CM_NO.NEXTVAL, #{message}, DEFAULT, #{chatRoomNo}, #{memberNo})
