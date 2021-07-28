@@ -56,9 +56,7 @@
 				- application/x-www-form-urlencoded : 모든 문자를 서버로 전송하기 전에 인코딩 (form태그 기본값)
 				- multipart/form-data : 모든 문자를 인코딩 하지 않음.(원본 데이터가 유지되어 이미지, 파일등을 서버로 전송 할 수 있음.) 
 			-->
-			<form action="${contextPath}/board2/insert?type=${param.type}" method="post" 
-				  enctype="multipart/form-data" role="form" onsubmit="return boardValidate();">
-
+			<form action="insert" method="post"  enctype="multipart/form-data" role="form" onsubmit="return boardValidate();">
 				<c:if test="${ !empty category}"> 
 					<div class="mb-2">
 						<label class="input-group-addon mr-3 insert-label">카테고리</label> 
@@ -112,15 +110,17 @@
 				</div>
 
 
-				<!-- 파일 업로드 하는 부분 -->
+				<!-- ***** 파일 업로드 하는 부분 ***** -->
 				<div id="fileArea">
-					<!--  multiple 속성
-						- input 요소 하나에 둘 이상의 값을 입력할 수 있음을 명시 (파일 여러개 선택 가능)
-					 -->
-					<input type="file" id="img0" name="img0" onchange="LoadImg(this,0)"> 
-					<input type="file" id="img1" name="img1" onchange="LoadImg(this,1)"> 
-					<input type="file" id="img2" name="img2" onchange="LoadImg(this,2)"> 
-					<input type="file" id="img3" name="img3" onchange="LoadImg(this,3)">
+					<!-- name 속성값(images)을 동일하게 지정 
+						-> @RequestParam을 이용하여 List로 파라미터를 전달받을 수 있음. 
+						
+						accept="image/*" 이미지 파일만 선택할 수 있도록하는 속성
+						 -->
+					<input type="file" id="img0" name="images" onchange="LoadImg(this,0)" accept="image/*"> 
+					<input type="file" id="img1" name="images" onchange="LoadImg(this,1)" accept="image/*"> 
+					<input type="file" id="img2" name="images" onchange="LoadImg(this,2)" accept="image/*"> 
+					<input type="file" id="img3" name="images" onchange="LoadImg(this,3)" accept="image/*">
 				</div>
 
 				<div class="form-group">
@@ -197,12 +197,10 @@
 				// FileReader.onload
 				// load 이벤트의 핸들러. 이 이벤트는 읽기 동작이 성공적으로 완료 되었을 때마다 발생합니다.
 				reader.onload = function(e) {
-					//console.log(e.target.result);
 					// e.target.result
 					// -> 파일 읽기 동작을 성공한 객체에(fileTag) 올라간 결과(이미지 또는 파일)
 
-					$(".boardImg").eq(num).children("img").attr("src",
-							e.target.result);
+					$(".boardImg").eq(num).children("img").attr("src",e.target.result);
 				}
 
 			}

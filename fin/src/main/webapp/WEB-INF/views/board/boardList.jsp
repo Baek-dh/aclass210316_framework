@@ -91,8 +91,7 @@
 									 request객체가 유지되고, 파라미터도 유지된다.
 						--%>
 						
-						<c:set var="searchStr" 
-							value="&sk=${param.sk}&sv=${param.sv}"  />
+						<c:set var="searchStr" value="&sk=${param.sk}&sv=${param.sv}"  />
 					</c:if>
 					
 					
@@ -122,18 +121,18 @@
 										
 										<%-- 글 제목 --%>
 										<td class="boardTitle">                                                         
-											<a href="view?no=${board.boardNo}&cp=${pagination.currentPage}&type=${pagination.boardType}${searchStr}">                                
+											<a href="${board.boardNo}?cp=${pagination.currentPage}${searchStr}">                                
 												
 												<%-- 썸네일 출력 --%>
 												<c:choose>
 													<%-- 썸네일 이미지가 없는 경우 --%>
-													<c:when test="${ empty board.fileName[0] }">
+													<c:when test="${ empty board.atList }">
 														<img src="${contextPath}/resources/images/noimage.png">
 													</c:when>
 													
 													<%-- 썸네일 이미지가 있는 경우 --%>
 													<c:otherwise>
-														<img src="${contextPath}/${board.filePath[0]}${board.fileName[0]}">
+														<img src="${contextPath}/${board.atList[0].filePath}${board.atList[0].fileName}">
 													</c:otherwise>
 												
 												</c:choose>
@@ -181,18 +180,19 @@
 
 			<%-- 로그인 되어 있을 경우에만 글쓰기 버튼 노출 --%>
 			<c:if test="${!empty loginMember }">
-				<button type="button" class="btn btn-primary float-right" id="insertBtn"
-				 onclick="location.href='../board2/insertForm?type=${pagination.boardType}';">글쓰기</button>
+				<%-- <button type="button" class="btn btn-primary float-right" id="insertBtn"
+				 onclick="location.href='../board2/insertForm?type=${pagination.boardType}';">글쓰기</button> --%>
+				<a  class="btn btn-primary float-right" id="insertBtn" href='insert'>글쓰기</a>
 			</c:if>
 			
 			
 			<%---------------------- Pagination start----------------------%>
 			<%-- 페이징 처리 시 주소를 쉽게 작성할 수 있도록 필요한 변수를 미리 선언 --%>
 			
-			<c:set var="pageURL" value="list?type=${pagination.boardType}"  />
+			<c:set var="pageURL" value="list"  />
 			
-			<c:set var="prev" value="${pageURL}&cp=${pagination.prevPage}${searchStr}" />
-			<c:set var="next" value="${pageURL}&cp=${pagination.nextPage}${searchStr}" />
+			<c:set var="prev" value="${pageURL}?cp=${pagination.prevPage}${searchStr}" />
+			<c:set var="next" value="${pageURL}?cp=${pagination.nextPage}${searchStr}" />
 			
 			
 			<div class="my-5">
@@ -205,7 +205,7 @@
 					
 					<%-- 현재 페이지가 2페이지 초과인 경우 --%>
 					<c:if test="${pagination.currentPage > 2 }">
-						<li><a class="page-link" href="${pageURL}&cp=${pagination.currentPage - 1}${searchStr}">&lt;</a></li>
+						<li><a class="page-link" href="${pageURL}?cp=${pagination.currentPage - 1}${searchStr}">&lt;</a></li>
 					</c:if>
 					
 					
@@ -219,14 +219,14 @@
 								</c:when>
 								
 								<c:otherwise>
-									<li><a class="page-link" href="${pageURL}&cp=${p}${searchStr}">${p}</a></li>
+									<li><a class="page-link" href="${pageURL}?cp=${p}${searchStr}">${p}</a></li>
 								</c:otherwise>
 							</c:choose>						
 					</c:forEach>
 					
 					<%-- 현재 페이지가 마지막 페이지 미만인 경우 --%>
 					<c:if test="${pagination.currentPage < pagination.maxPage }">
-						<li><a class="page-link" href="${pageURL}&cp=${pagination.currentPage + 1}${searchStr}">&gt;</a></li>
+						<li><a class="page-link" href="${pageURL}?cp=${pagination.currentPage + 1}${searchStr}">&gt;</a></li>
 					</c:if>
 					
 					<%-- 현재 페이지가 마지막 페이지가 아닌 경우 --%>
