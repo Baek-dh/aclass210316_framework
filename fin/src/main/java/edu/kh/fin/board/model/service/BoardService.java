@@ -2,6 +2,8 @@ package edu.kh.fin.board.model.service;
 
 import java.util.List;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import edu.kh.fin.board.model.vo.Board;
 import edu.kh.fin.board.model.vo.Category;
 import edu.kh.fin.board.model.vo.Pagination;
@@ -30,6 +32,15 @@ public interface BoardService {
 	 * @return category
 	 */
 	List<Category> selectCategory();
+
+	/** 게시글 삽입
+	 * @param board
+	 * @param images
+	 * @param webPath
+	 * @param savePath
+	 * @return boardNo
+	 */
+	int insertBoard(Board board, List<MultipartFile> images, String webPath, String savePath);
 	
 	
 	

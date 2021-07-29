@@ -65,5 +65,39 @@
 	<tx:annotation-driven transaction-manager="transactionManager"/>
 	
 	
+	<!-- 파일 업로드를 위한 MultipartResolver Bean으로 등록하기 -->
+	<!-- CommonsMultipartResolver: MultipartResolver를 상속 받아 구현한 클래스로
+		multipart/form-data 형식의 요청 시 input type="file" 태그를 자동으로 인식하여
+		MultipartFile 객체의 형태로 반환.
+		
+		파일 외의 파라미터는 기존 처럼 사용 가능.
+		+ 해당 객체를 만들기 위해서는 commons-fileupload 라이브러리가 필요함
+	 -->
+	
+	<bean id="multipartResolver"
+		  class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+	
+		<property name="maxUploadSize"  value="104857600" />
+		<property name="maxUploadSizePerFile"  value="104857600" />
+		<property name="maxInMemorySize" value="104857600" />
+	
+	</bean>
+	<!-- 
+		maxUploadSize : 한 요청당 허용되는 업로드 최대 용량(byte 단위)
+						-1은 무제한(기본값)
+						104857600 byte == 100MB
+						
+		maxUploadSizePerFile : 한 파일당 허용되는 업로드 최대 용량.
+		maxInMemorySize : 디스크에 저장하지 않고 메모리에 유지할 수 있는 허용 용량.
+						  해당 용량 초과 시 자동으로 디스크에 저장
+	 -->
+	
+	
+	
+	
+	
+	
+	
+	
 		
 </beans>

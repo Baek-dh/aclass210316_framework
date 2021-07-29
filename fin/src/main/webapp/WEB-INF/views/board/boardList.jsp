@@ -126,7 +126,7 @@
 												<%-- 썸네일 출력 --%>
 												<c:choose>
 													<%-- 썸네일 이미지가 없는 경우 --%>
-													<c:when test="${ empty board.atList }">
+													<c:when test="${ empty board.atList || board.atList[0].fileLevel != 0   }">
 														<img src="${contextPath}/resources/images/noimage.png">
 													</c:when>
 													

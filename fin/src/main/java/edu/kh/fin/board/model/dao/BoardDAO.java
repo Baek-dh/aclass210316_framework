@@ -7,6 +7,7 @@ import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import edu.kh.fin.board.model.vo.Attachment;
 import edu.kh.fin.board.model.vo.Board;
 import edu.kh.fin.board.model.vo.Category;
 import edu.kh.fin.board.model.vo.Pagination;
@@ -69,6 +70,34 @@ public class BoardDAO {
 	 */
 	public List<Category> selectCategory() {
 		return sqlSession.selectList("boardMapper.selectCategory");
+	}
+
+	/** 게시글 삽입
+	 * @param board
+	 * @return boardNo
+	 */
+	public int insertBoard(Board board) {
+		int result = sqlSession.insert("boardMapper.insertBoard", board);
+		// insert 성공 시 1, 실패 시 0
+		
+		// mapper 에서 <selectKey> 수행 결과인 게시글 번호를
+		// 얕은 복사로 전달한 board에 추가했음.
+		
+		if(result > 0) {
+			return board.getBoardNo();
+		}else {
+			return 0;
+		}
+		
+	}
+
+	
+	/** 파일 정보 삽입(List)
+	 * @param atList
+	 * @return result
+	 */
+	public int insertAttachmentList(List<Attachment> atList) {
+		return sqlSession.insert("boardMapper.insertAttachmentList", atList);
 	}
 	
 	

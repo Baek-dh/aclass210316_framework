@@ -2,16 +2,20 @@ package edu.kh.fin.board.controller;
 
 import java.util.List;
 
+import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
 import javax.websocket.server.PathParam;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import edu.kh.fin.board.model.service.BoardService;
@@ -19,6 +23,7 @@ import edu.kh.fin.board.model.vo.Board;
 import edu.kh.fin.board.model.vo.Category;
 import edu.kh.fin.board.model.vo.Pagination;
 import edu.kh.fin.member.controller.MemberController;
+import edu.kh.fin.member.model.vo.Member;
 
 @Controller
 @RequestMapping("/board/*")
@@ -103,6 +108,78 @@ public class BoardController {
 		
 		return "board/boardInsert";
 	}
+	
+	
+	// 게시글 삽입
+	@RequestMapping(value="{boardType}/insert", method=RequestMethod.POST)
+	public String insertBoard(@PathVariable("boardType") int boardType,
+							  @ModelAttribute Board board, /*커맨드객체*/
+							  @ModelAttribute("loginMember") Member loginMember,  /*세션 로그인 정보*/
+							  @RequestParam("images") List<MultipartFile> images, /*업로드된 이미지 파일*/
+							  HttpServletRequest request, RedirectAttributes ra
+			) {
+		
+		/* 스프링에는 업로드된 파일을 위한 MultipartResolver라는 인터페이스가 존재한다.
+		 * 
+		 * 이 인터페이스를 구현하는 방법은 2가지 있음.
+		 * 1. Servlet 3.0 이상 버전에서 제공하는 StandardServletMultipartResolver
+		 * 2. Apache Commons FileUpload에서 제공하는 CommonsMultipartResolver (이거 사용!)
+		 *  -> 준비 1) commons-fileupload 라이브러리 추가
+		 *  -> 준비 2) root-context.xml 파일에 bean 등록
+		 *  
+		 *  input type="file" 형태의 파라미터를 MultipartFile 객체로 반환해줌!
+		 * 
+		 * MultipartFile에서 제공하는 메소드
+		 * - getSize() : 업로드된 파일의 크기(용량) 반환
+		 * - getOriginalFileName() : 업로드된 파일 원본명 반환
+		 * - transferTo() : 메모리 -> 파일로 변환되어 저장 (중요!)
+		 * */
+		
+		//System.out.println("디버그 모드 제발 되라 ....");
+		
+		
+		// 1) 로그인된 회원 정보에서 회원 번호를 얻어와 board 커맨드 객체에 세팅
+		board.setMemberNo( loginMember.getMemberNo()  );
+		
+		// 2) @PathVariable boardType을 board 커맨드 객체에 세팅
+		board.setBoardType(boardType);
+		
+		// 3) 웹상 접근 경로, 실제 파일 저장 경로 지정
+		String webPath = "resources/images/";
+		
+		// 게시판 타입에 따라 업로드되는 파일의 경로를 지정
+		switch(boardType) { 
+		case 1 : webPath += "freeboard/"; break;
+		}
+		
+		// 실제로 파일이 저장되는 경로 얻어오기
+		String savePath = request.getSession().getServletContext().getRealPath(webPath);
+		
+		
+		// 4) 게시글 삽입 Service 호출
+		int boardNo = service.insertBoard(board, images, webPath, savePath);
+		// 변수명이 boardNo인 이유? 
+		// -> 삽입 성공 시 해당 번호 글로 상세조회 하기 위해
+		
+		
+		String path = null;
+		if(boardNo > 0) { // 삽입 성공
+			// 상세 조회 페이지로 리다이렉트 -> /fin/board/1/600
+			// 현재 페이지					 -> /fin/board/1/insert
+			path = "redirect:" + boardNo;
+			MemberController.swalSetMessage(ra, "success", "게시글 삽입 성공",  null);
+			
+		} else { // 삽입 실패
+			// 이전 게시글 작성 화면으로 리다이렉트
+			path = "redirect:" + request.getHeader("referer"); // 요청 이전 주소
+			MemberController.swalSetMessage(ra, "error", "게시글 삽입 실패",  null);
+		}
+		
+		
+		return path;
+	}
+	
+	
 	
 	
 	

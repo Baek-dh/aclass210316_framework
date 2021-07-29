@@ -49,7 +49,6 @@
 
 			<h3>게시글 등록</h3>
 			<hr>
-			<!-- 파일 업로드를 위한 라이브러리 cos.jar 라이브러리 다운로드(http://www.servlets.com/) -->
 			
 			<!-- 
 				- enctype : form 태그 데이터가 서버로 제출 될 때 인코딩 되는 방법을 지정. (POST 방식일 때만 사용 가능)
@@ -177,6 +176,9 @@
 		$(function() {
 			$(".boardImg").on("click", function() {
 				var index = $(".boardImg").index(this);
+				// this : 이벤트가 발생한 요소 == 클릭된 .boardImg 요소
+				// 배열.index("요소") : 매개변수로 작성된 요소가 배열의 몇 번째 index 요소인지 반환
+				
 				$("#img" + index).click();
 			});
 
