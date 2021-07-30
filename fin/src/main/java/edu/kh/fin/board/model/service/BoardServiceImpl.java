@@ -3,13 +3,16 @@ package edu.kh.fin.board.model.service;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import edu.kh.fin.board.exception.InsertAttachmentException;
 import edu.kh.fin.board.exception.SaveFileException;
 import edu.kh.fin.board.model.dao.BoardDAO;
 import edu.kh.fin.board.model.vo.Attachment;
@@ -175,8 +178,117 @@ public class BoardServiceImpl implements BoardService{
 		return boardNo;
 	}
 	
+
+	// 게시글 수정용 상세 조회
+	@Override
+	public Board selectUpdateBoard(int boardNo) {
+		Board board = dao.selectBoard(boardNo);
+		
+		// <br> -> \r\n으로 변경
+		board.setBoardContent( board.getBoardContent().replaceAll("<br>", "\r\n") );
+		
+		return board;
+	}
+
+	
+	// 게시글 수정
+	@Transactional(rollbackFor = Exception.class)
+	@Override
+	public int updateBoard(Board board, List<MultipartFile> images, String webPath, String savePath, String deleteImages) {
+		
+		// 1) 크로스사이트 스크립트 방지 처리 + 개행문자 처리(\r\n -> <br>)
+		board.setBoardTitle( replaceParameter(  board.getBoardTitle()  )  );
+		board.setBoardContent( replaceParameter(  board.getBoardContent()  )  );
+		
+		board.setBoardContent(  board.getBoardContent().replaceAll("(\r\n|\r|\n|\n\r)", "<br>")  );
+		
+		// 2) 글 부분만 수정
+		int result = dao.updateBoard(board);
+		
+		// 3) 이미지 관련 코드 작성
+		if(result > 0 ) {
+			// 3-1) deleteImages와 일치하는 파일레벨의 ATTACHMENT 행 삭제
+			// deleteImage : 삭제해야할 이미지 파일 레벨을 ","를 구분자로 하여 만들어진 String
+			
+			if( !deleteImages.equals("") ) { // 삭제할 파일 레벨이 존재하는 경우
+				// DB 삭제 구문에 필요한 값 : deleteImages, boardNo
+				// 두 데이터를 한번에 담을 VO가 없음 -> Map 사용
+				
+				Map<String , Object> map = new HashMap<String, Object>();
+				map.put("boardNo", board.getBoardNo());
+				map.put("deleteImages", deleteImages);
+				
+				// 반환값이 아무런 의미를 갖지 못하므로 반환 받을 필요가 없다.
+				dao.deleteAttachment(map);
+			}
+			
+			// 3-2) 수정된 이미지 정보 update
+			List<Attachment> atList = new ArrayList<Attachment>(); 
+			
+			for(int i=0 ; i<images.size() ; i++) {
+				
+				if( !images.get(i).getOriginalFilename().equals("")  ) { // 파일이 업로드 된 경우
+					// images의 i번째 요소의 파일명이 ""이 아닐 경우
+					// -> 업로드된 파일이 없을 경우 파일명이 ""(빈문자열)로 존재함
+					
+					// 파일명 변경 작업 수행
+					String fileName = rename(images.get(i).getOriginalFilename());
+					
+					// Attachment 객체 생성
+					Attachment at = new Attachment();
+					at.setFileName(fileName); // 변경한 파일명
+					at.setFilePath(webPath); // 웹 접근 경로
+					at.setBoardNo(board.getBoardNo()); // 수정중인 게시글 번호
+					at.setFileLevel(i); // for문 반복자 == 파일레벨
+					
+					// 만들어진 객체를 atList에 추가
+					atList.add(at);
+				}
+			}
+			
+			System.out.println(atList);
+			
+			// atList를 하나씩 반복 접근하여 한 행씩 update 진행
+			for(Attachment at : atList) {
+				result = dao.updateAttachment(at);
+				System.out.println("update result : " + result);
+				
+				// update를 시도했으나 결과가 0이 나온경우
+				// == 기존에 이미지가 없던 레벨에 새로운 이미지가 추가되었다
+				// -> insert 진행
+				
+				// 3-3) 기존에 이미지가 없던 레벨을 insert
+				if(result == 0) {
+					result = dao.insertAttachment(at);
+					
+					if(result == 0) { // 삽입 실패
+						// 강제로 예외를 발생시켜 전체 롤백 수행
+						throw new InsertAttachmentException();
+					}
+				}
+			}
+			
+			
+			// 4) 새로 업로드된 이미지 서버에 저장
+			for(int i=0 ; i<atList.size() ; i++) {
+				try {
+					images.get( atList.get(i).getFileLevel() )
+					.transferTo(new File(savePath + "/" + atList.get(i).getFileName()  ));
+				} catch (Exception e) {
+					e.printStackTrace();
+					throw new SaveFileException();
+				}
+			}
+		}
+		
+		
+		return result;
+	}
+
 	
 	
+	
+
 	// 크로스 사이트 스크립트 방지 처리 메소드
 	private String replaceParameter(String param) {
 		String result = param;

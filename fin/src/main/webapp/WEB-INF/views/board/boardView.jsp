@@ -212,7 +212,6 @@
 	<form action="#" method="POST" name="requestForm">
 		<input type="hidden" name="boardNo" value="${board.boardNo}">
 		<input type="hidden" name="cp" value="${param.cp}">
-		<input type="hidden" name="type" value="${param.type}">
 	</form>
 	
 	
@@ -220,7 +219,7 @@
 		function fnRequest(addr){
 			
 			// 현재 문서 내부에 name속성 값이 requestForm인 요소의 action 속성 값을 변경
-			document.requestForm.action = "../board2/" + addr;
+			document.requestForm.action =  addr;
 			
 			// 현재 문서 내부에 name속성 값이 requestForm인 요소를 제출해라
 			document.requestForm.submit();

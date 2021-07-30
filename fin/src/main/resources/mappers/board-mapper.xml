@@ -67,6 +67,7 @@
 	<select id="selectAttachment" parameterType="_int" resultMap="attachment_rm">
 		SELECT * FROM ATTACHMENT
 		WHERE BOARD_NO = #{boardNo}
+		ORDER BY FILE_LEVEL
 	</select>
  
  
@@ -158,6 +159,51 @@
   			</foreach>
   		) A
   		
+  	</insert>
+  
+  
+  	<!-- 게시글 수정 -->
+  	<update id="updateBoard"  parameterType="Board">
+  		UPDATE BOARD SET
+  		BOARD_TITLE =  #{boardTitle} ,
+  		BOARD_CONTENT = #{boardContent} ,
+  		CATEGORY_CD = #{categoryCode} ,
+  		MODIFY_DT = SYSTIMESTAMP
+  		WHERE BOARD_NO = #{boardNo} 
+  	</update>
+  
+  
+  	<!-- 첨부 파일 정보 삭제 -->
+  	<delete id="deleteAttachment" parameterType="map" >
+  		<!-- 파라미터가 Map 형식인 경우  #{key} 를 작성하면 value가 나옴  -->
+  		
+  		DELETE FROM ATTACHMENT
+  		WHERE BOARD_NO = #{boardNo}
+  		AND FILE_LEVEL IN (  ${deleteImages}  )
+  		
+  		<!-- 
+  			#{} : PreparedStatement 기호로 값의 자료형에 따라 자동으로 ''(홑따옴표)를 붙여줄 수 있음
+  			${} : Statement 기호로 ''(홑따옴표)가 자동으로 붙지 않음.
+  					== SQL구문 자체로 인식됨
+  		 -->
+  		
+  		<!-- boardNo : 500   /  deleteImages : "1,2,0" -->
+  		
+  	</delete>
+  
+  	<!-- 첨부 파일 정보 수정(한 행) -->
+  	<update id="updateAttachment" parameterType="Attachment">
+  		UPDATE ATTACHMENT SET
+  		FILE_NM = #{fileName}
+  		WHERE BOARD_NO = #{boardNo}
+  		AND FILE_LEVEL = #{fileLevel}
+  	</update>
+  
+  
+  	<!-- 첨부 파일 정보 삽입 (한 행) -->
+  	<insert id="insertAttachment" parameterType="Attachment" >
+  		INSERT INTO ATTACHMENT VALUES
+  		(SEQ_FNO.NEXTVAL, #{filePath}, #{fileName}, #{fileLevel}, #{boardNo})
   	</insert>
   
   

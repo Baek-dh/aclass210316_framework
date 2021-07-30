@@ -1,6 +1,7 @@
 package edu.kh.fin.board.model.dao;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.session.RowBounds;
 import org.mybatis.spring.SqlSessionTemplate;
@@ -98,6 +99,38 @@ public class BoardDAO {
 	 */
 	public int insertAttachmentList(List<Attachment> atList) {
 		return sqlSession.insert("boardMapper.insertAttachmentList", atList);
+	}
+
+	/** 게시글 수정
+	 * @param board
+	 * @return result
+	 */
+	public int updateBoard(Board board) {
+		return sqlSession.update("boardMapper.updateBoard", board);
+	}
+
+	
+	/** 첨부 파일 정보 삭제
+	 * @param map
+	 */
+	public void deleteAttachment(Map<String, Object> map) {
+		sqlSession.delete("boardMapper.deleteAttachment", map);
+	}
+
+	/** 첨부 파일 정보 수정(한 행)
+	 * @param at
+	 * @return result
+	 */
+	public int updateAttachment(Attachment at) {
+		return sqlSession.update("boardMapper.updateAttachment", at);
+	}
+
+	/** 첨부 파일 정보 삽입(한 행)
+	 * @param at
+	 * @return result
+	 */
+	public int insertAttachment(Attachment at) {
+		return sqlSession.insert("boardMapper.insertAttachment", at);
 	}
 	
 	

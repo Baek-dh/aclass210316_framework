@@ -180,6 +180,66 @@ public class BoardController {
 	}
 	
 	
+	// 게시글 수정 화면 전환
+	@RequestMapping(value="{boardType}/updateForm", method=RequestMethod.POST)
+	public String updateForm(int boardNo, Model model) {
+		// DB에서 조회해야만 하는 것들 : 카테고리 목록, 해당 번호 게시글(개행문자 처리)
+		
+		// 1) 카테고리 목록 조회
+		List<Category> category = service.selectCategory();
+		
+		// 2) 게시글 상세조회 (개행문자 <br> -> \r\n으로 변경한 것)
+		Board board = service.selectUpdateBoard(boardNo);
+		
+		// 3) 조회된 데이터를 전달하기 위해 model에 추가
+		model.addAttribute("category", category);
+		model.addAttribute("board", board);
+		
+		return "board/boardUpdate";
+	}
+	
+	
+	
+	// 게시글 수정
+	@RequestMapping(value="{boardType}/update", method=RequestMethod.POST)
+	public String updateBoard(@PathVariable("boardType") int boardType,
+				  Board board /*커맨드 객체*/,
+				  @RequestParam("images") List<MultipartFile> images /*수정 또는 추가된 파일*/,
+				  @RequestParam("deleteImages") String deleteImages /*삭제파일레벨*/,
+				  HttpServletRequest request, Model model, RedirectAttributes ra ) {
+		
+		// 1) 파일이 저장될 실제 서버 경로, DB에 저장될 웹 접근 경로 구하기
+		String webPath = "resources/images/";
+		
+		switch(boardType) { // 게시판 타입이 여러 개 있을 경우
+		case 1 : webPath += "freeboard/"; break;
+		}
+		
+		// 실제 저장용 서버 경로
+		String savePath = request.getSession().getServletContext().getRealPath(webPath);
+		
+		
+		// 2) 게시글 수정 Service 호출
+		int result = service.updateBoard(board, images, webPath, savePath, deleteImages);
+		
+		String path = null;
+		if(result > 0) { // 수정 성공
+			path = "redirect:" + board.getBoardNo();
+			MemberController.swalSetMessage(ra, "success", "게시글 수정 성공",  null);
+			
+		} else { // 삽입 실패
+			// 이전 게시글 작성 화면으로 리다이렉트
+			path = "redirect:" + request.getHeader("referer"); // 요청 이전 주소
+			MemberController.swalSetMessage(ra, "error", "게시글 수정 실패",  null);
+		}
+		
+		
+		return path;
+	}
+	
+	
+	
+	
 	
 	
 	
