@@ -103,8 +103,8 @@ function addReply()	{
 				url : "${contextPath}/reply/insertReply", // 필수 속성!!!!
 				type : "POST",
 				data : { "memberNo" : loginMemberNo,
-								 "boardNo" : boardNo,
-								 "replyContent" : replyContent },
+						 "boardNo" : boardNo,
+						 "replyContent" : replyContent },
 				success : function(result){
 					
 					if(result > 0){ // 댓글 삽입 성공
@@ -141,7 +141,7 @@ function selectReplyList(){
        $("#replyListArea").html(""); // 기존 정보 초기화
        // 왜? 새로 읽어온 댓글 목록으로 다시 만들어서 출력하려고!
        
-       $.each(rList, function(index, item){
+       	$.each(rList, function(index, item){
     	   	// $.each() : jQuery의 반복문
     	   	// rList : ajax 결과로 받은 댓글이 담겨있는 객체 배열
     	   	// index : 순차 접근 시 현재 인덱스

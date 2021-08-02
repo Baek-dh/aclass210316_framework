@@ -19,9 +19,11 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import edu.kh.fin.board.model.service.BoardService;
+import edu.kh.fin.board.model.service.ReplyService;
 import edu.kh.fin.board.model.vo.Board;
 import edu.kh.fin.board.model.vo.Category;
 import edu.kh.fin.board.model.vo.Pagination;
+import edu.kh.fin.board.model.vo.Reply;
 import edu.kh.fin.member.controller.MemberController;
 import edu.kh.fin.member.model.vo.Member;
 
@@ -38,6 +40,9 @@ public class BoardController {
 
 	@Autowired
 	private BoardService service;
+	
+	@Autowired
+	private ReplyService replyService;
 	
 	
 	// 게시글 목록 조회
@@ -83,6 +88,9 @@ public class BoardController {
 		Board board = service.selectBoard(boardNo);
 		
 		if(board != null) { // 상세 조회 성공 시
+			List<Reply> rList = replyService.selectList(boardNo);
+			model.addAttribute("rList", rList);
+			
 			model.addAttribute("board", board);
 			return "board/boardView";
 			

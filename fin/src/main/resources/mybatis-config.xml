@@ -26,6 +26,8 @@
 		<typeAlias type="edu.kh.fin.board.model.vo.Category" alias="Category"/>
 		<typeAlias type="edu.kh.fin.board.model.vo.Pagination" alias="Pagination"/>
 		
+		<typeAlias type="edu.kh.fin.board.model.vo.Reply" alias="Reply"/>
+		
 		
 	</typeAliases>
 
@@ -34,6 +36,7 @@
 		<mapper resource="/mappers/member-mapper.xml" />
 		<mapper resource="/mappers/chat-mapper.xml" />
 		<mapper resource="/mappers/board-mapper.xml" />
+		<mapper resource="/mappers/reply-mapper.xml" />
 	</mappers>
 
 </configuration>
