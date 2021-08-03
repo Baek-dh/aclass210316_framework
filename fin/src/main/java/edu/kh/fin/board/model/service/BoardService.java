@@ -7,6 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 import edu.kh.fin.board.model.vo.Board;
 import edu.kh.fin.board.model.vo.Category;
 import edu.kh.fin.board.model.vo.Pagination;
+import edu.kh.fin.board.model.vo.Search;
 
 public interface BoardService {
 
@@ -15,6 +16,16 @@ public interface BoardService {
 	 * @return pagination
 	 */
 	Pagination getPagination(Pagination pg);
+	
+	
+	/** 전체 게시글 수 + 게시판 이름 조회(검색)
+	 * @param search
+	 * @param pg
+	 * @return pagination
+	 */
+	Pagination getPagination(Search search, Pagination pg);
+	
+	
 
 	/** 게시글 목록 조회
 	 * @param pagination
@@ -22,6 +33,16 @@ public interface BoardService {
 	 */
 	List<Board> selectBoardList(Pagination pagination);
 
+	
+	/** 게시글 목록 조회(검색)
+	 * @param search
+	 * @param pagination
+	 * @return boardList
+	 */
+	List<Board> selectBoardList(Search search, Pagination pagination);
+	
+	
+	
 	/** 게시글 상세 조회
 	 * @param boardNo
 	 * @return board
@@ -57,6 +78,11 @@ public interface BoardService {
 	 * @return result
 	 */
 	int updateBoard(Board board, List<MultipartFile> images, String webPath, String savePath, String deleteImages);
+
+
+
+
+
 	
 	
 	

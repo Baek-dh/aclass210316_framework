@@ -85,13 +85,37 @@
 					
 					
 					<%-- 검색 상태 유지를 위한 쿼리스트링용 변수 선언 --%>
-					<c:if test="${!empty param.sk && !empty param.sv }">
+					<c:if test="${!empty param.sk}">
+					
+						<!-- 
+							/fin/board/1/list?ct=1&ct=2&sk=writer&sv=김
+						 -->
+						 
+						 <!-- ct가 파라미터에 있다면 -->
+						 <c:if test="${!empty paramValues.ct }">
+						 
+						 	<!-- &ct=1&ct=2 형식의 문자열을 조합 -->
+						 	<c:forEach items="${paramValues.ct }" var="code">
+						 		<c:set var="category" value="${category}&ct=${code}" />
+						 	</c:forEach>
+						 </c:if>
+						 
+						 
+						 
+						 <!-- sv가 파라미터에 있다면 -->
+						 <c:if test="${ !empty param.sv &&  param.sv != '' }">
+					 		
+					 		<!-- &sv=김 형식의 문자열을 조합-->
+					 		<c:set var="searchValue" value="&sv=${param.sv}" />
+						 </c:if>
+						 
+					
 						<%-- 검색은  게시글 목록 조회에 단순히 sk, sv 파라미터를 추가한 것
 								-> 목록 조회 결과 화면을 만들기 위해 boardList.jsp로 요청 위임 되기 때문에
 									 request객체가 유지되고, 파라미터도 유지된다.
 						--%>
 						
-						<c:set var="searchStr" value="&sk=${param.sk}&sv=${param.sv}"  />
+						<c:set var="searchStr" value="${category}&sk=${param.sk}${searchValue}"  />
 					</c:if>
 					
 					
@@ -245,8 +269,14 @@
 			<div class="my-5">
 				<form action="list" method="GET" class="text-center" id="searchForm">
 				
+					<span> 카테고리(다중 선택 가능)<br> 
+						<label for="talk">잡담</label> <input type="checkbox" name="ct" value="1" id="talk"> &nbsp; 
+						<label for="question">질문</label> <input type="checkbox" name="ct" value="2" id="question"> &nbsp; 
+						<label for="news">뉴스</label> <input type="checkbox" name="ct" value="3" id="news"> &nbsp; 
+					</span> 
+				
 					<!-- 게시판 타입 유지를 위한 태그 -->
-					<input type="hidden" name="type" value="${pagination.boardType}">
+					<%-- <input type="hidden" name="boardType" value="${pagination.boardType}"> --%>
 				
 					<select name="sk" class="form-control" style="width: 100px; display: inline-block;">
 						<option value="title">글제목</option>
@@ -283,6 +313,29 @@
 				
 				// 검색어 입력창에 searcValue 값 출력
 				$("input[name=sv]").val(searchValue);
+				
+				
+				// 쿼리스트링에 카테고리가 있을 경우 체크하기
+				
+				// ** <script> 태그 내부에 EL, JSTL 사용 가능
+				// 단, 이클립스가 인식을 못함
+				// JSP에서 언어 해석 순서 : 1. EL/JSTL ,  2. HTML,  3. JS
+				<c:forEach  items="${paramValues.ct}"  var="code" >
+					
+					// name 속성값이 ct인 요소들을 반복 접근
+					$.each( $("[name='ct']") ,  function(){
+						
+						// this : 현재 반복 접근한 요소
+						if( $(this).val() == "${code}"    ){
+							
+							$(this).prop("checked", true);
+						}
+						
+					})
+				
+				</c:forEach>
+				
+				
 			})();
 			
 	</script>

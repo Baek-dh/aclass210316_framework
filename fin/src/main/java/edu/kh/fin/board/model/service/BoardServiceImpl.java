@@ -19,6 +19,7 @@ import edu.kh.fin.board.model.vo.Attachment;
 import edu.kh.fin.board.model.vo.Board;
 import edu.kh.fin.board.model.vo.Category;
 import edu.kh.fin.board.model.vo.Pagination;
+import edu.kh.fin.board.model.vo.Search;
 
 @Service
 public class BoardServiceImpl implements BoardService{
@@ -39,10 +40,32 @@ public class BoardServiceImpl implements BoardService{
 	}
 
 	
+	// 전체 게시글 수 + 게시판 이름 조회(검색)
+	@Override
+	public Pagination getPagination(Search search, Pagination pg) {
+		// 1) 검색이 적용된 게시글 수 조회
+		Pagination selectPg = dao.getSearchListCount(search);
+		
+		//System.out.println(selectPg);
+		
+		// 2) 계산이 완료된 Pagination 객체 생성 후 반환
+		return new Pagination(pg.getCurrentPage(), selectPg.getListCount(),
+				pg.getBoardType(), selectPg.getBoardName());
+	}
+
+
+
 	// 게시글 목록 조회
 	@Override
 	public List<Board> selectBoardList(Pagination pagination) {
 		return dao.selectBoardList(pagination);
+	}
+	
+	
+	// 게시글 목록 조회(검색)
+	@Override
+	public List<Board> selectBoardList(Search search, Pagination pagination) {
+		return dao.selectSearchList(search, pagination);
 	}
 
 

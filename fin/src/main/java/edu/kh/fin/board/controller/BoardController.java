@@ -2,9 +2,7 @@ package edu.kh.fin.board.controller;
 
 import java.util.List;
 
-import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
-import javax.websocket.server.PathParam;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -24,6 +22,7 @@ import edu.kh.fin.board.model.vo.Board;
 import edu.kh.fin.board.model.vo.Category;
 import edu.kh.fin.board.model.vo.Pagination;
 import edu.kh.fin.board.model.vo.Reply;
+import edu.kh.fin.board.model.vo.Search;
 import edu.kh.fin.member.controller.MemberController;
 import edu.kh.fin.member.model.vo.Member;
 
@@ -52,17 +51,42 @@ public class BoardController {
 	@RequestMapping("{boardType}/list")
 	public String boardList(@PathVariable("boardType") int boardType,
 				@RequestParam(value="cp", required=false, defaultValue = "1") int cp,
-				Model model, Pagination pg/*페이징 처리에 사용할 비어있는 객체*/) {
+				Model model, Pagination pg/*페이징 처리에 사용할 비어있는 객체*/,
+				Search search/*검색용 커맨드 객체*/) {
 		
 		// 1) pg에 boardType, cp를 세팅
 		pg.setBoardType(boardType);
 		pg.setCurrentPage(cp);
 		
-		// 2) 전체 게시글 수를 조회하여 Pagination 관련 내용을 계산하고 값을 저장한 객체 반환 받기
-		Pagination pagination = service.getPagination(pg);
+		System.out.println(search);
+		// 게시글 목록 조회  : Search [sk=null, sv=null, boardType=1, ct=null]
+		// 카테고리x 검색O :   Search [sk=title, sv=게시글, boardType=1, ct=null]
+		// 카테고리o 검색O :   Search [sk=title, sv=게시글, boardType=1, ct=[1, 2]]
+		// 검색 X -> sk == null
+		// 검색 O -> sk != null
 		
-		// 3) 생성된 pagination을 이용하여 현재 목록 페이지에 보여질 게시글 목록 조회
-		List<Board> boardList = service.selectBoardList(pagination);
+		Pagination pagination = null;
+		List<Board> boardList = null;
+		
+		if(search.getSk() == null) { // 검색 X --> 전체 목록 조회
+			// 2) 전체 게시글 수를 조회하여 Pagination 관련 내용을 계산하고 값을 저장한 객체 반환 받기
+			pagination = service.getPagination(pg);
+			
+			// 3) 생성된 pagination을 이용하여 현재 목록 페이지에 보여질 게시글 목록 조회
+			boardList = service.selectBoardList(pagination);
+		
+		} else { // 검색 --> 검색 목록 조회
+			
+			// 검색이 적용된 pagination 객체 생성
+			pagination = service.getPagination(search, pg); // 메소드 오버로딩
+			
+			// 검색이 적용된 pagination을 이용하여 게시글 목록 조회
+			boardList = service.selectBoardList(search, pagination);
+			
+		}
+		
+		
+		
 		
 		// 조회 결과 임시 확인
 		/*for(Board b : boardList) {

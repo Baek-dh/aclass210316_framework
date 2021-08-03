@@ -28,6 +28,8 @@
 		
 		<typeAlias type="edu.kh.fin.board.model.vo.Reply" alias="Reply"/>
 		
+		<typeAlias type="edu.kh.fin.board.model.vo.Search" alias="Search"/>
+		
 		
 	</typeAliases>
 

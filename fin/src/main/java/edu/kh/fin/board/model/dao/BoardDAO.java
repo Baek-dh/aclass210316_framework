@@ -12,6 +12,7 @@ import edu.kh.fin.board.model.vo.Attachment;
 import edu.kh.fin.board.model.vo.Board;
 import edu.kh.fin.board.model.vo.Category;
 import edu.kh.fin.board.model.vo.Pagination;
+import edu.kh.fin.board.model.vo.Search;
 
 @Repository
 public class BoardDAO {
@@ -26,6 +27,16 @@ public class BoardDAO {
 	public Pagination getListCount(int boardType) {
 		return sqlSession.selectOne("boardMapper.getListCount", boardType);
 	}
+	
+	/** 특정 게시판 검색 게시글 수 조회
+	 * @param search
+	 * @return pagination
+	 */
+	public Pagination getSearchListCount(Search search) {
+		return sqlSession.selectOne("boardMapper.getSearchListCount", search);
+	}
+	
+	
 
 	/** 게시글 목록 조회
 	 * @param pagination
@@ -46,6 +57,24 @@ public class BoardDAO {
 		
 		return sqlSession.selectList("boardMapper.selectBoardList", pagination.getBoardType(), rowBounds);
 	}
+	
+	
+	/** 게시글 목록 조회(검색)
+	 * @param search
+	 * @param pagination
+	 * @return boardList
+	 */
+	public List<Board> selectSearchList(Search search, Pagination pagination) {
+		// RowBounds : 지정된 offset 만큼 건너 뛴 후 몇 행을 조회할지 지정하는 객체
+		int offset = (pagination.getCurrentPage() - 1) * pagination.getLimit();
+		
+		RowBounds rowBounds = new RowBounds(offset, pagination.getLimit());
+		
+		return sqlSession.selectList("boardMapper.selectSearchList", search, rowBounds);
+	}
+
+	
+	
 
 	
 	 
@@ -132,6 +161,8 @@ public class BoardDAO {
 	public int insertAttachment(Attachment at) {
 		return sqlSession.insert("boardMapper.insertAttachment", at);
 	}
+
+
 	
 	
 	
