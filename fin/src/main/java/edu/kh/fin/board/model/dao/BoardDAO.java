@@ -162,6 +162,16 @@ public class BoardDAO {
 		return sqlSession.insert("boardMapper.insertAttachment", at);
 	}
 
+	
+	
+	/** 72시간 보다 더 과거에 추가된 파일명 조회
+	 * @param standard
+	 * @return dbList
+	 */
+	public List<String> selectDBList(String standard) {
+		return sqlSession.selectList("boardMapper.selectDBList",standard);
+	}
+
 
 	
 	

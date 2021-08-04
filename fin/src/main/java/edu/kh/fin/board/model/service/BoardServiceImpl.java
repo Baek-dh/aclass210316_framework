@@ -304,11 +304,15 @@ public class BoardServiceImpl implements BoardService{
 			}
 		}
 		
-		
 		return result;
 	}
 
-	
+	// 72시간 보다 더 과거에 추가된 파일명 조회
+	@Override
+	public List<String> selectDBList(String standard) {
+		return dao.selectDBList(standard);
+	}
+
 	
 	
 

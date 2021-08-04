@@ -80,6 +80,13 @@ public interface BoardService {
 	int updateBoard(Board board, List<MultipartFile> images, String webPath, String savePath, String deleteImages);
 
 
+	/** 72시간 보다 더 과거에 추가된 파일명 조회
+	 * @param standard
+	 * @return dbList
+	 */
+	List<String> selectDBList(String standard);
+
+
 
 
 
